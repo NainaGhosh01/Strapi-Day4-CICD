@@ -2,10 +2,10 @@ FROM node:20
 
 WORKDIR /app
 
-COPY strapi/package.json ./
+COPY Strapi-proj/package.json ./
 RUN npm install
 
-COPY strapi ./
+COPY Strapi-proj ./
 RUN npm run build
 
 EXPOSE 1337
