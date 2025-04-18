@@ -1,25 +1,25 @@
 name: Deploy Strapi to EC2 using Terraform
 
 on:
-  workflow_dispatch:
+  push:
+    branches: ["main"]
 
 jobs:
+  build-image:
+    uses: ./.github/workflows/docker-build.yaml
+
   deploy:
+    needs: build-image
     runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Download image tag artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: image_tag
-
-    - name: Read image tag
-      run: |
-        IMAGE_TAG=$(cat image_tag.txt)
-        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
@@ -30,8 +30,8 @@ jobs:
 
     - name: Terraform Plan
       working-directory: ./terraform
-      run: terraform plan -var="image_tag=${IMAGE_TAG}" -var="key_name=${{ secrets.KEY_NAME }}" -var="subnet_id=${{ secrets.SUBNET_ID }}" -var="vpc_id=${{ secrets.VPC_ID }}"
+      run: terraform plan -var="image_tag=${{ needs.build-image.outputs.image_tag }}" -var="key_name=${{ secrets.KEY_NAME }}" -var="subnet_id=${{ secrets.SUBNET_ID }}" -var="vpc_id=${{ secrets.VPC_ID }}"
 
     - name: Terraform Apply
       working-directory: ./terraform
-      run: terraform apply -auto-approve -var="image_tag=${IMAGE_TAG}" -var="key_name=${{ secrets.KEY_NAME }}" -var="subnet_id=${{ secrets.SUBNET_ID }}" -var="vpc_id=${{ secrets.VPC_ID }}"
+      run: terraform apply -auto-approve -var="image_tag=${{ needs.build-image.outputs.image_tag }}" -var="key_name=${{ secrets.KEY_NAME }}" -var="subnet_id=${{ secrets.SUBNET_ID }}" -var="vpc_id=${{ secrets.VPC_ID }}"
