@@ -1,0 +1,39 @@
+name: Build and Push Strapi Docker Image
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build Docker image
+      run: |
+        IMAGE_TAG=latest-$(date +%s)
+        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+        docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/strapi:$IMAGE_TAG .
+
+    - name: Push Docker image to ECR
+      run: |
+        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/strapi:$IMAGE_TAG
+
+    - name: Save image tag
+      run: echo "${IMAGE_TAG}" > image_tag.txt
+
+    - name: Upload image tag as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: image_tag
+        path: |
+          ${{ github.workspace }}/image_tag.txt
+
+    

@@ -1,0 +1,23 @@
+{
+  "kind": "collectionType",
+  "collectionName": "task1s",
+  "info": {
+    "singularName": "task1",
+    "pluralName": "task1s",
+    "displayName": "Task1"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Manual": {
+      "type": "string"
+    },
+    "Locally": {
+      "type": "blocks"
+    },
+    "Date": {
+      "type": "datetime"
+    }
+  }
+}
