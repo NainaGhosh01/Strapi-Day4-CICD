@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-image:
-    uses: ./.github/workflows/docker-build.yaml
+    uses: ./.github/workflows/ci.yaml
 
   deploy:
     needs: build-image
