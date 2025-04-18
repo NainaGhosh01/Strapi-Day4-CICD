@@ -11,7 +11,7 @@ data "aws_subnet_ids" "default" {
 }
 
 resource "aws_instance" "strapi" {
-  ami                    = "ami-0fc5d935ebf8bc3bc" # Amazon Linux 2023
+  ami                    = "ami-0df368112825f8d8f" # Amazon Linux 2023
   instance_type          = var.instance_type
   subnet_id              = data.aws_subnet_ids.default.ids[0]
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
