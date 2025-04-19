@@ -20,7 +20,7 @@ resource "aws_instance" "strapi" {
 
   user_data = templatefile("${path.module}/user_data.sh", {
     image_tag = var.image_tag
-    aws_account_id = "118273046134"
+    aws_account_id = "724772070195"
   })
 
   tags = {
