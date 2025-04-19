@@ -45,3 +45,10 @@ jobs:
         name: image_tag
         path: image_tag.txt
         ## ${{ github.workspace }}/image_tag.txt
+
+    - name: Trigger Terraform Deployment
+      uses: peter-evans/repository-dispatch@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        event-type: trigger-terraform
+
