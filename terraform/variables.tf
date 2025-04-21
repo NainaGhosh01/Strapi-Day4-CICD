@@ -2,6 +2,9 @@ variable "aws_region" {
   default = "eu-west-1"
 }
 
+variable "AWS_ACCESS_KEY_ID" {}
+variable "AWS_SECRET_ACCESS_KEY" {}
+
 variable "image_tag" {
   description = "Docker image tag for the Strapi app"
   type        = string
