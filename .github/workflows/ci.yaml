@@ -33,22 +33,13 @@ jobs:
         IMAGE_TAG=latest-$(date +%s)
         echo "$IMAGE_TAG" > image_tag.txt
         docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/strapi:$IMAGE_TAG .
-        
+
     - name: Push Docker image to ECR
       run: |
         IMAGE_TAG=$(cat image_tag.txt)
         docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/strapi:$IMAGE_TAG
 
-    - name: Upload image tag as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: image_tag
-        path: image_tag.txt
-        ## ${{ github.workspace }}/image_tag.txt
-
-    - name: Trigger Terraform Deployment
-      uses: peter-evans/repository-dispatch@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        event-type: trigger-terraform
-
+    - name: Print Image Tag for Secrets
+      run: |
+        IMAGE_TAG=$(cat image_tag.txt)
+        echo "Your image tag is: $IMAGE_TAG"
