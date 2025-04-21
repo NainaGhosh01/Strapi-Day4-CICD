@@ -1,5 +1,7 @@
 provider "aws" {
   region = var.aws_region
+  access_key = var.AWS_ACCESS_KEY_ID
+  secret_key = var.AWS_SECRET_ACCESS_KEY
 }
 
 # Fetch default VPC
@@ -80,7 +82,6 @@ resource "aws_instance" "strapi" {
 
   user_data = templatefile("${path.module}/user_data.sh", {
     image_tag       = var.image_tag
-    aws_account_id  = "724772070195"
   })
 
   tags = {
