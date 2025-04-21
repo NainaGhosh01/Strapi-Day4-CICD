@@ -15,6 +15,9 @@ data "aws_subnets" "default" {
   }
 }
 
+# Fetch AWS account ID (⭐️ Added this block)
+data "aws_caller_identity" "current" {}
+
 # Create Security Group for Strapi
 resource "aws_security_group" "strapi_sg" {
   name   = "strapi-sg"
@@ -78,8 +81,10 @@ resource "aws_instance" "strapi" {
   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
   key_name               = var.key_name
 
+  # ⭐️ Updated this block to pass both image_tag and aws_account_id
   user_data = templatefile("${path.module}/user_data.sh", {
     image_tag       = var.image_tag
+    aws_account_id  = data.aws_caller_identity.current.account_id
   })
 
   tags = {
