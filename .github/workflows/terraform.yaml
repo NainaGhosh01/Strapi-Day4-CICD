@@ -23,6 +23,12 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
 
+    - name: Clean Terraform cache
+      working-directory: ./terraform
+      run: |
+        rm -rf .terraform
+
+
     - name: Terraform Init
       working-directory: ./terraform
       run: terraform init
