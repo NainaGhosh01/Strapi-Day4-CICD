@@ -1,9 +1,7 @@
 name: Deploy Strapi to EC2 using Terraform
 
 on:
-  #workflow_dispatch:
-  repository_dispatch:
-    types: [trigger-terraform]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -13,15 +11,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Download image tag artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: image_tag
-
-    - name: Read image tag
-      run: |
-        IMAGE_TAG=$(cat image_tag.txt)
-        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+    - name: Read image tag from Secrets
+      run: echo "IMAGE_TAG=${{ secrets.IMAGE_TAG }}" >> $GITHUB_ENV
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
