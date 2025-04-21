@@ -68,7 +68,7 @@ resource "aws_iam_role_policy_attachment" "ecr_readonly" {
 
 # Instance Profile for EC2 to assume IAM Role
 resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "strapi-ec2-profile"
+  name = "strapi-ec2-profile-new"
   role = aws_iam_role.ec2_role.name
 }
 
