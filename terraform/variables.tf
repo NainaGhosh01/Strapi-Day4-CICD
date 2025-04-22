@@ -7,6 +7,11 @@ variable "image_tag" {
   type        = string
 }
 
+variable "dockerhub_username" {
+  description = "Docker Hub username"
+  type        = string
+}
+
 variable "instance_type" {
   default = "t2.medium"
 }
