@@ -35,7 +35,13 @@ jobs:
     - name: Terraform Plan
       working-directory: ./terraform
       run: terraform plan -var="image_tag=${IMAGE_TAG}" -var="dockerhub_username=${DOCKERHUB_USERNAME}" -var="key_name=${{ secrets.KEY_NAME }}" -var="subnet_id=${{ secrets.SUBNET_ID }}" -var="vpc_id=${{ secrets.VPC_ID }}"
-
+      env:
+          TF_VAR_dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          TF_VAR_dockerhub_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      
     - name: Terraform Apply
       working-directory: ./terraform
       run: terraform apply -auto-approve -var="image_tag=${IMAGE_TAG}" -var="dockerhub_username=${DOCKERHUB_USERNAME}" -var="key_name=${{ secrets.KEY_NAME }}" -var="subnet_id=${{ secrets.SUBNET_ID }}" -var="vpc_id=${{ secrets.VPC_ID }}"
+      env:
+          TF_VAR_dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          TF_VAR_dockerhub_password: ${{ secrets.DOCKERHUB_PASSWORD }}
