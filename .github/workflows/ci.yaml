@@ -1,4 +1,4 @@
-name: Build and Push Strapi Docker Image
+name: Build and Push Strapi Docker Image in ECR
 
 on:
   push:
