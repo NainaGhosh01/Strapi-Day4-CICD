@@ -12,22 +12,18 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       IMAGE_TAG: ${{ secrets.IMAGE_TAG }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Read image tag from Secrets
-      run: echo "IMAGE_TAG=${{ secrets.IMAGE_TAG }}" >> $GITHUB_ENV
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
 
     - name: Clean Terraform cache
       working-directory: ./terraform
-      run: |
-        rm -rf .terraform
-
+      run: rm -rf .terraform
 
     - name: Terraform Init
       working-directory: ./terraform
@@ -35,8 +31,8 @@ jobs:
 
     - name: Terraform Plan
       working-directory: ./terraform
-      run: terraform plan -var="image_tag=${IMAGE_TAG}" -var="key_name=${{ secrets.KEY_NAME }}" -var="subnet_id=${{ secrets.SUBNET_ID }}" -var="vpc_id=${{ secrets.VPC_ID }}"
+      run: terraform plan -var="image_tag=${IMAGE_TAG}" -var="dockerhub_username=${DOCKERHUB_USERNAME}" -var="key_name=${{ secrets.KEY_NAME }}" -var="subnet_id=${{ secrets.SUBNET_ID }}" -var="vpc_id=${{ secrets.VPC_ID }}"
 
     - name: Terraform Apply
       working-directory: ./terraform
-      run: terraform apply -auto-approve -var="image_tag=${IMAGE_TAG}" -var="key_name=${{ secrets.KEY_NAME }}" -var="subnet_id=${{ secrets.SUBNET_ID }}" -var="vpc_id=${{ secrets.VPC_ID }}"
+      run: terraform apply -auto-approve -var="image_tag=${IMAGE_TAG}" -var="dockerhub_username=${DOCKERHUB_USERNAME}" -var="key_name=${{ secrets.KEY_NAME }}" -var="subnet_id=${{ secrets.SUBNET_ID }}" -var="vpc_id=${{ secrets.VPC_ID }}"
