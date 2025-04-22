@@ -12,6 +12,12 @@ variable "dockerhub_username" {
   type        = string
 }
 
+variable "dockerhub_password" {
+  description = "Docker Hub password"
+  type        = string
+  sensitive   = true
+}
+
 variable "instance_type" {
   default = "t2.medium"
 }
