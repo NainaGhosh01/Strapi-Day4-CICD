@@ -15,7 +15,7 @@ data "aws_subnets" "default" {
   }
 }
 
-# Fetch AWS account ID (⭐️ Added this block)
+# Fetch AWS account ID
 data "aws_caller_identity" "current" {}
 
 # Create Security Group for Strapi
@@ -54,19 +54,19 @@ resource "aws_iam_role" "ec2_role" {
   })
 }
 
-# Attach SSM access
+# Attach SSM access policy
 resource "aws_iam_role_policy_attachment" "ssm_attach" {
   role       = aws_iam_role.ec2_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-# Attach ECR read access
+# Attach ECR read access policy
 resource "aws_iam_role_policy_attachment" "ecr_readonly" {
   role       = aws_iam_role.ec2_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
-# Instance Profile for EC2 to assume IAM Role
+# Create Instance Profile for EC2 to assume the Role
 resource "aws_iam_instance_profile" "ec2_profile" {
   name = "strapi-ec2-profile-new"
   role = aws_iam_role.ec2_role.name
@@ -81,11 +81,21 @@ resource "aws_instance" "strapi" {
   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
   key_name               = var.key_name
 
-  # ⭐️ Updated this block to pass both image_tag and aws_account_id
-  user_data = templatefile("${path.module}/user_data.sh", {
-    image_tag       = var.image_tag
-    aws_account_id  = data.aws_caller_identity.current.account_id
-  })
+  user_data = <<-EOF
+    #!/bin/bash
+    yum update -y
+    yum install -y docker
+    service docker start
+    usermod -a -G docker ec2-user
+    systemctl enable docker
+
+    # Login to ECR
+    aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.eu-west-1.amazonaws.com
+
+    # Pull and run Strapi container
+    docker pull ${data.aws_caller_identity.current.account_id}.dkr.ecr.eu-west-1.amazonaws.com/strapi:${var.image_tag}
+    docker run -d -p 1337:1337 ${data.aws_caller_identity.current.account_id}.dkr.ecr.eu-west-1.amazonaws.com/strapi:${var.image_tag}
+  EOF
 
   tags = {
     Name = "Strapi-EC2"
