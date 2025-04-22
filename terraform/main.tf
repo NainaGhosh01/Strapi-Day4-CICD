@@ -40,19 +40,17 @@ resource "aws_instance" "strapi" {
   key_name               = var.key_name
 
   user_data = <<-EOF
-    #!/bin/bash
-    yum update -y
-    yum install -y docker
-    systemctl start docker
-    systemctl enable docker
-    usermod -a -G docker ec2-user
+      #!/bin/bash
+      yum update -y
+      yum install -y docker
+      systemctl start docker
+      systemctl enable docker
+      usermod -a -G docker ec2-user
 
-    # Login to Docker Hub (anonymous for public repos, or add login if private)
-    docker login -u ${var.dockerhub_username}
+      docker login -u "${var.dockerhub_username}" --password "${var.dockerhub_password}"
+      docker pull ${var.dockerhub_username}/strapi:${var.image_tag}
+      docker run -d -p 1337:1337 ${var.dockerhub_username}/strapi:${var.image_tag}
 
-    # Pull and run Strapi container
-    docker pull ${var.dockerhub_username}/strapi:${var.image_tag}
-    docker run -d -p 1337:1337 ${var.dockerhub_username}/strapi:${var.image_tag}
   EOF
 
   tags = {
