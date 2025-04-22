@@ -35,8 +35,15 @@ jobs:
 
     - name: Terraform Plan
       working-directory: ./terraform
-      run: terraform plan -var="image_tag=${IMAGE_TAG}" -var="key_name=${{ secrets.KEY_NAME }}" -var="subnet_id=${{ secrets.SUBNET_ID }}" -var="vpc_id=${{ secrets.VPC_ID }}"
-
+      run: |
+           terraform plan \
+            -var="image_tag=${IMAGE_TAG}" \
+            -var="aws_region=${AWS_REGION}" \
+            -var="aws_access_key_id=${AWS_ACCESS_KEY_ID}" \
+            -var="aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}" \
+            -var="key_name=${KEY_NAME}" \
+            -var="instance_type=t2.medium"
+            
     - name: Terraform Apply
       working-directory: ./terraform
       run: terraform apply -auto-approve \
